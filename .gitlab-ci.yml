@@ -1,0 +1,29 @@
+variables:
+  DOCKER_DRIVER: overlay
+
+build:
+  stage: build
+  image: node:latest
+  script:
+  - npm install -g foundation-cli bower --silent --depth=0
+  - npm install --silent --depth=0
+  - bower install --allow-root --silent --depth=0
+  - foundation build
+  artifacts:
+    paths:
+    - dist/
+
+deploy:
+  stage: deploy
+  image: sebble/deploy
+  dependencies:
+  - build
+  script:
+  - mkdir -p ~/.ssh
+  - echo $SSH_HOST $SSH_HOST_KEY > ~/.ssh/known_hosts
+  - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - rsync -azv dist/ root@$SSH_HOST:/var/www/html
+  - ssh root@$SSH_HOST service nginx restart
+  only:
+  - master

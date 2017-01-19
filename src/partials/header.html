@@ -1,0 +1,7 @@
+<div class="row">
+  <ul class="menu">
+  {{#each pages}}
+    <li{{#ifpage page}} class="active"{{/ifpage}}><a href="{{root}}{{page}}.html">{{title}}</a></li>
+  {{/each}}
+  </ul>
+</div>
